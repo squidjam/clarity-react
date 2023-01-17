@@ -26,7 +26,7 @@ And make use of the components in your app:
 #### `App.tsx`
 ```typescript jsx
 import React, {Component} from 'react';
-import MainContainer from "@dell/clarity-react/layout/main-container/MainContainer";
+import MainContainer from "@dellstorage/clarity-react/layout/main-container/MainContainer";
 
 const initialState = {
 };
