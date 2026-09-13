@@ -9,6 +9,9 @@ import {classNames} from "../../utils";
  * @param {locale} regional code
  * @param {defaultValue} default date value
  * @param {dataqa} quality engineering testing field
+ * @param {onChange} function to call on change of filter value
+ * @param {disabled} boolean value to enable or disable filter
+ * @param {disableFutureDates} boolean if true, future dates will be disabled
  */
 export type DatePickerProps = {
     value?: Date;
@@ -16,6 +19,8 @@ export type DatePickerProps = {
     defaultValue?: Date | string;
     dataqa?: string;
     onChange?: (newValue: string | Date) => void;
+    disabled?: boolean;
+    disableFutureDates?: boolean;
 };
 
 export type DatePickerState = {
@@ -56,6 +61,7 @@ export class DatePicker extends React.PureComponent<DatePickerProps, DatePickerS
         value: undefined,
         defaultValue: undefined,
         onChange: undefined,
+        disableFutureDates: false,
     };
 
     private calRef = React.createRef<HTMLDivElement>();
@@ -76,6 +82,12 @@ export class DatePicker extends React.PureComponent<DatePickerProps, DatePickerS
                 : Moment(this.props.defaultValue),
         inputFocused: false,
     };
+
+    componentDidUpdate(prevProps: Readonly<DatePickerProps>, prevState: Readonly<DatePickerState>): void {
+        if (this.props.defaultValue !== prevProps.defaultValue) {
+            this.setState({value: this.value});
+        }
+    }
 
     get value() {
         const {value, defaultValue} = this.props;
@@ -219,12 +231,13 @@ export class DatePicker extends React.PureComponent<DatePickerProps, DatePickerS
         }
     };
 
-    private buildDateClasses(isSelected: boolean, isToday: boolean, isDisabled: boolean) {
+    private buildDateClasses(isSelected: boolean, isToday: boolean, isDisabled: boolean, isFuture: boolean) {
         return classNames([
             "day-btn", // prettier
             isSelected && !isToday && "is-selected",
             isToday && "is-today",
             isDisabled && "is-disabled",
+            isFuture && this.props.disableFutureDates && "is-future",
         ]);
     }
 
@@ -238,7 +251,7 @@ export class DatePicker extends React.PureComponent<DatePickerProps, DatePickerS
 
     render() {
         const {isOpen, viewMode, navValue, inputFocused, value} = this.state;
-        const {locale, dataqa} = this.props;
+        const {locale, dataqa, disabled} = this.props;
         const navMonth = navValue.month();
         const navYear = navValue.year();
         const daysFromPrevMonth = DatePicker.numDaysFromPrevMonth(navYear, navMonth);
@@ -267,12 +280,14 @@ export class DatePicker extends React.PureComponent<DatePickerProps, DatePickerS
                             onFocus={this.handleInputFocus}
                             onBlur={this.handleInputBlur}
                             onChange={this.handleInputChange}
+                            disabled={disabled}
                         />
                         <button
                             className="clr-input-group-icon-action"
                             type="button"
                             title="Open"
                             onClick={this.handleToggle.bind(this)}
+                            disabled={disabled}
                         >
                             <Icon shape="calendar" />
                         </button>
@@ -348,6 +363,7 @@ export class DatePicker extends React.PureComponent<DatePickerProps, DatePickerS
                                                                                     isSelected,
                                                                                     isToday,
                                                                                     isDisabled,
+                                                                                    calendar.isAfter(Moment(), "day"),
                                                                                 )}
                                                                                 tabIndex={this.calculateTabIndex(
                                                                                     isSelected,

@@ -47,6 +47,8 @@ import {
     paginationDetailsForDetailsPane,
     paginationRowsWithLinks,
     storeForDetailPane,
+    paginationDetailswithPageSizes,
+    paginationDetailsForLessThan10Records,
 } from "./DataGridStoriesData";
 import {CustomFilter} from "./CustomFilter";
 import {CustomFilterMulti} from "./CustomFilterMulti";
@@ -417,6 +419,29 @@ storiesOf("DataGrid", module)
                 itemText={"Users"}
                 footer={{showFooter: true}}
             />
+        </div>
+    ))
+    .add("Grid with pagination and custom page size", () => (
+        <div style={{width: "80%", paddingLeft: "1rem"}}>
+            <br />
+            <span> {"Datagrid with custom page sizes and more than or equal to 10 records."} </span>
+            <DataGrid
+                columns={normalColumns}
+                rows={paginationRows.slice(0, 10)}
+                pagination={paginationDetailswithPageSizes}
+                itemText={"Users"}
+                footer={{showFooter: true}}
+            />
+            <br /> <br />
+            <span> {"Datagrid with custom page sizes and less than 10 records."} </span>
+            <DataGrid
+                columns={normalColumns}
+                rows={paginationRows.slice(0, 6)}
+                pagination={paginationDetailsForLessThan10Records}
+                itemText={"Users"}
+                footer={{showFooter: true}}
+            />
+            <br /> <br />
         </div>
     ))
     .add("Grid with pagination and compact footer", () => (
